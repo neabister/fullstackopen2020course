@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import axios from 'axios'
 
+const api_key = process.env.REACT_APP_API_KEY
+
 const App = () => {
   
   const [countries, setCountries] = useState([])
@@ -69,6 +71,32 @@ const CountryNameList = ({ countries, setCountry }) => {
   )
 }
 
+const Weather = ({ capital }) => {
+  const [weather, setWeather] = useState(null)
+  const hook = () => {
+    axios
+      .get(`http://api.weatherstack.com/current?access_key=${api_key}&query=${capital}`)
+      .then(response => {
+        console.log('promise fullfilled')
+        setWeather(response.data)
+        console.log(response.data)
+      })
+  }
+  useEffect(hook, [])
+  if (!weather) {
+    return (
+      'Loading weather...'
+    )
+  }
+
+  return (
+    <div>
+    <p><b>Temperature:</b> {weather.current.temperature} Celcius</p>
+    <p><img src={weather.current.weather_icons[0]} alt="" width="100" /></p>
+    <p><b>Wind:</b> {weather.current.wind_speed} mph direction {weather.current.wind_dir}</p>
+    </div>
+  )
+}
 
 const FullCountryDetails = ({ country }) => {
   return (
@@ -86,6 +114,10 @@ const FullCountryDetails = ({ country }) => {
         )}
       </ul>
       <img src={country.flag} alt="" width="200" />
+      
+      <h3>Weather in {country.capital}</h3>
+      <Weather capital={country.capital} />
+
   </div>
   )
 }
