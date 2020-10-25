@@ -16,7 +16,7 @@ const App = () => {
   const addPerson = (event) => {
     event.preventDefault()
     console.log('add button clicked', event.target)
-    if (persons.map(p => p.name).includes(newName)) {
+    if (persons.map(p => p.name.toLowerCase()).includes(newName.toLowerCase())) {
       window.alert(`${newName} is already added to phonebook`);
       return 
     } 
@@ -48,19 +48,42 @@ const App = () => {
     setNameFilter(event.target.value)
   }
 
-  const personFilter = person => person.name.toLowerCase().includes(nameFilter)
-
+  
+  const personFilter = person => person.name.toLowerCase().includes(nameFilter);
 
   return (
     <div>
       <h2>Phonebook</h2>
-        <input
+        
+      <FilterName nameFilter={nameFilter} handleNameFilter={handleNameFilter} />
+
+      <h2>Add new</h2>
+      
+      <PersonForm addPerson={addPerson} newName={newName} newNumber={newNumber} 
+      handleNameChange={handleNameChange} handleNumberChange={handleNumberChange} />
+      
+      <h2>Numbers</h2>
+
+      <PersonList persons={persons.filter(personFilter)} />
+    
+      </div>
+  )
+
+}
+
+const FilterName = ({ nameFilter, handleNameFilter }) => {
+  return (
+    <input
           value={nameFilter}
           onChange={handleNameFilter}
         />
+  )
 
-      <h2>Add new</h2>
-      <form onSubmit={addPerson}>
+}
+
+const PersonForm = ({ addPerson, newName, newNumber, handleNameChange, handleNumberChange}) => {
+  return (
+    <form onSubmit={addPerson}>
         <div>
           name: 
           <input 
@@ -79,18 +102,7 @@ const App = () => {
           <button type="submit">add</button>
         </div>
       </form>
-      <h2>Numbers</h2>
-      <div>
-        {persons.filter(personFilter).map(person => 
-          <Person key={person.name} person={person} />
-      )}
-      </div>
-        
-       
-    
-    </div>
   )
-
 }
 
 const Person = ({ person }) => {
@@ -98,5 +110,16 @@ const Person = ({ person }) => {
     <li>{person.name} {person.number}</li>
   )
 }
+
+const PersonList = ({ persons }) => {
+  return (
+    <div>
+      {persons.map(person => 
+        <Person key={person.name} person={person} />
+      )}
+    </div>
+  )
+}
+
 
 export default App;
